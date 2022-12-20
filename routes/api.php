@@ -14,5 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/calculations', [CalculationController::class, 'index']);
-Route::post('/calculations', [CalculationController::class, 'calculate']);
+Route::group(['prefix' => '/calculations'], function () {
+    Route::get('/', [CalculationController::class, 'index']);
+    Route::post('/', [CalculationController::class, 'calculate']);
+    Route::delete('/', [CalculationController::class, 'clear']);
+    Route::delete('/{calculation}', [CalculationController::class, 'delete']);
+});
+
+

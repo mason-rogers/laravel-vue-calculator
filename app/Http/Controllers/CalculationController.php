@@ -38,4 +38,16 @@ class CalculationController extends Controller
             'result' => $created->result,
         ];
     }
+
+    public function delete(Request $request, Calculation $calculation) {
+        $calculation->delete();
+
+        return response()->noContent();
+    }
+
+    public function clear(Request $request) {
+        Calculation::query()->delete();
+
+        return response()->noContent();
+    }
 }
