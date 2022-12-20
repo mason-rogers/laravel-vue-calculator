@@ -1,28 +1,11 @@
 <template>
-    <div class="alert" :class="type">
+    <div class="p-2 text-zinc-200 rounded" :class="colorClass">
         <p>{{ message }}</p>
     </div>
 </template>
 
-<style scoped lang="scss">
-.alert {
-    padding: 0.5rem;
-    color: #d4d4d8;
-    margin-bottom: 0.5rem;
-    border-radius: 8px;
-
-    &.danger {
-        background: #dc2626;
-    }
-
-    &.warning {
-        background: #f97316;
-    }
-}
-</style>
-
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {computed, defineComponent} from 'vue';
 
 export default defineComponent({
     props: {
@@ -37,8 +20,16 @@ export default defineComponent({
         }
     },
 
-    setup() {
-        return {};
+    setup(props) {
+        return {
+            colorClass: computed(() => {
+                switch(props.type) {
+                    case 'warning': return 'bg-orange-500';
+                    case 'danger': return 'bg-red-600';
+                    default: return 'bg-sky-500';
+                }
+            })
+        };
     }
 })
 </script>

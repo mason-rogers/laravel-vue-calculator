@@ -6,7 +6,7 @@
 
         <title>CalcTek</title>
     </head>
-    <body class="bg-zinc-900 min-h-screen font-inter">
+    <body class="bg-zinc-300 text-zinc-100 min-h-screen font-inter">
         <div id="app" />
 
         @vite('resources/js/app.ts')

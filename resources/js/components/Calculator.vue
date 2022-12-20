@@ -1,25 +1,52 @@
 <template>
-    <div class="bg-zinc-200 rounded-lg w-2/5 relative">
-        <h1 class="text-center">Calculator</h1>
+    <div class="bg-neutral-900 rounded-lg w-2/5 relative overflow-y-scroll" ref="containerRef">
+        <h1 class="text-center mt-4 font-semibold text-lg">Calculator</h1>
 
-        <div class="p-4">
-            <alert v-if="errorAlert" :type="errorAlert.type" :message="errorAlert.message" />
+        <div class="flex flex-col">
+            <alert v-if="errorAlert" class="mb-4" :type="errorAlert.type" :message="errorAlert.message" />
 
-            <form @submit.prevent="onSubmit">
-                <input v-model="expression" class="rounded text-lg p-2 w-full" type="text" placeholder="Enter a mathematical expression..." :disabled="loading">
-            </form>
+            <div class="rounded font-bold text-3xl text-zinc-100 p-4 w-full text-right" type="text">
+                {{ expression || '0' }}
+            </div>
 
-            <div class="mt-4">
-                <h2>Example Expressions</h2>
+            <div class="mt-4 p-4 h-3/4 bg-neutral-500 rounded-lg items-start grid grid-cols-4 gap-x-4 gap-y-4 overflow-y-hidden">
+                <calculator-button type="clear" use-half-width @click="expression = ''">C</calculator-button>
+                <calculator-button type="operand" @click="toggleNegative()">±</calculator-button>
+                <calculator-button type="operand" @click="addOperator('/')">/</calculator-button>
 
-                <ul class="expression-list">
+                <calculator-button type="number" @click="addNumber(7)">7</calculator-button>
+                <calculator-button type="number" @click="addNumber(8)">8</calculator-button>
+                <calculator-button type="number" @click="addNumber(9)">9</calculator-button>
+                <calculator-button type="operand" @click="addOperator('*')">*</calculator-button>
+
+                <calculator-button type="number" @click="addNumber(4)">4</calculator-button>
+                <calculator-button type="number" @click="addNumber(5)">5</calculator-button>
+                <calculator-button type="number" @click="addNumber(6)">6</calculator-button>
+                <calculator-button type="operand" @click="addOperator('-')">-</calculator-button>
+
+                <calculator-button type="number" @click="addNumber(1)">1</calculator-button>
+                <calculator-button type="number" @click="addNumber(2)">2</calculator-button>
+                <calculator-button type="number" @click="addNumber(3)">3</calculator-button>
+                <calculator-button type="operand" @click="addOperator('+')">+</calculator-button>
+
+                <calculator-button type="number" use-half-width @click="addNumber(0)">0</calculator-button>
+                <calculator-button type="number" @click="addDecimal()">.</calculator-button>
+                <calculator-button type="equal" @click="onSubmit">=</calculator-button>
+
+            </div>
+
+            <div class="my-4">
+                <h2 class="text-center font-semibold text-lg">Example Expressions</h2>
+
+                <ul class="mt-4 gap-x-4 space-y-4 px-4">
                     <li
                         v-for="(example, idx) in exampleExpressions"
                         :key="idx"
-                        @click="() => expression = example[0]"
-                        class="cursor-pointer"
+                        @click="useExampleExpression(example[0])"
+                        class="bg-neutral-500 rounded-lg cursor-pointer p-4 font-bold text-xl text-zinc-100 p-2 flex justify-between"
                     >
-                        {{ example[0] }} => {{ example[1] }}
+                        <p>{{ example[0] }}</p>
+                        <p> = {{ example[1] }}</p>
                     </li>
                 </ul>
             </div>
@@ -32,6 +59,7 @@ import {defineComponent, ref} from 'vue';
 import type { AxiosError } from 'axios';
 import {client, CalculateRequest, CalculateResponse} from '../api';
 import Alert from "./Alert.vue";
+import CalculatorButton from "./CalculatorButton.vue";
 
 interface CalculationError {
     type: 'warning' | 'danger';
@@ -39,61 +67,89 @@ interface CalculationError {
 }
 
 export default defineComponent({
-    components: {Alert},
+    components: {CalculatorButton, Alert},
     emits: ['result'],
 
     setup(props, { emit }) {
-       const loading = ref(false);
-       const expression = ref('');
-       const errorAlert = ref<CalculationError | null>(null);
+        const containerRef = ref<HTMLDivElement>();
+        const loading = ref(false);
+        const expression = ref('');
+        const errorAlert = ref<CalculationError | null>(null);
 
-       return {
-           loading,
-           expression,
-           errorAlert,
+        return {
+            containerRef,
+            loading,
+            expression,
+            errorAlert,
 
-           exampleExpressions: [
-               ["1 + 2", "3"],
-               ["6 + -12", "-6"],
-               ["5 - -10", "15"],
-               ["12 * 12", "144"],
-               ["4096 / 1024", "4"],
-               ["1 / 3", "0.333"],
-           ],
+            exampleExpressions: [
+                ["1 + 2", "3"],
+                ["6 + -12", "-6"],
+                ["5 - -10", "15"],
+                ["12 * 12", "144"],
+                ["4096 / 1024", "4"],
+                ["1 / 3", "0.333"],
+            ],
 
-           async onSubmit () {
-               loading.value = true;
-               errorAlert.value = null;
+            useExampleExpression(exampleExpression: string) {
+                containerRef.value.scrollTop = 0;
+                expression.value = exampleExpression;
+            },
 
-               // Submit
-               console.log(`Attempting to calculate ${expression.value}`);
+            addOperator(operator: '+' | '-' | '*' | '/') {
+                if (/( [+\-*\/] )$/.test(expression.value)) {
+                    expression.value = expression.value.slice(0, -3) + ` ${operator} `
+                } else {
+                    expression.value += ` ${operator} `
+                }
+            },
 
-               try {
-                   const res = await client.post('/api/calculations', <CalculateRequest>{
-                       expression: expression.value,
-                   });
+            addNumber(number: number) {
+                expression.value += number
+            },
 
-                   const data = res.data as CalculateResponse;
+            addDecimal() {
+                if (expression.value.endsWith('.')) return;
+                expression.value += '.';
+            },
 
-                   const evaluatedExpression = expression.value;
-                   expression.value = data.result.toString();
+            toggleNegative() {
 
-                   emit('result', evaluatedExpression, data.result);
-               } catch (err: AxiosError) {
-                   if (err.response.status === 422) {
-                       errorAlert.value = {
-                           type: 'warning',
-                           message: err.response?.data?.message || 'Unprocessable entity error returned no message'
-                       }
+            },
+
+            async onSubmit() {
+                loading.value = true;
+                errorAlert.value = null;
+
+                // Submit
+                console.log(`Attempting to calculate ${expression.value}`);
+
+                try {
+                    const res = await client.post('/api/calculations', <CalculateRequest>{
+                        expression: expression.value,
+                    });
+
+                    const data = res.data as CalculateResponse;
+
+                    const evaluatedExpression = expression.value;
+                    expression.value = data.result.toString();
+
+                    emit('result', evaluatedExpression, data.result);
+                } catch (err: AxiosError) {
+                    if (err.response.status === 422) {
+                        errorAlert.value = {
+                            type: 'warning',
+                            message: err.response?.data?.message || 'Unprocessable entity error returned no message'
+                        };
                    } else {
-                       errorAlert.value = {
-                           type: 'danger',
-                           message: err.response?.data?.message || 'An unknown error occurred.'
-                       }
+                        errorAlert.value = {
+                            type: 'danger',
+                            message: err.response?.data?.message || 'An unknown error occurred.'
+                       };
                    }
-               }
+                }
 
-               loading.value = false;
+                loading.value = false;
            },
        };
    }
