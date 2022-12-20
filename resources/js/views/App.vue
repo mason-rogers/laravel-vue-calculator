@@ -1,5 +1,5 @@
 <template>
-    <div class="centered">
+    <div class="centered w-1/2 h-3/4 rounded p-4 flex justify-between gap-x-8 fixed top-1/2 left-1/2 ">
         <calculator @result="onCalculatorResult" />
 
         <past-calculations ref="pastCalculationsRef" />
@@ -8,20 +8,7 @@
 
 <style scoped lang="scss">
 .centered {
-    position: fixed;
-    top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
-
-
-    width: 50%;
-    height: 75vh;
-
-    border-radius: 8px;
-    padding: 1rem;
-
-    display: flex;
-    justify-content: space-between;
 }
 </style>
 
@@ -40,8 +27,6 @@ export default defineComponent({
             pastCalculationsRef,
 
             onCalculatorResult() {
-                console.log('ref', pastCalculationsRef.value);
-
                 pastCalculationsRef.value?.refresh();
             }
         }

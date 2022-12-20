@@ -1,89 +1,31 @@
 <template>
-    <div class="calculator">
-        <h1 class="title bottom-border">Calculator</h1>
+    <div class="bg-zinc-200 rounded-lg w-2/5 relative">
+        <h1 class="text-center">Calculator</h1>
 
-        <div class="calculator-box">
+        <div class="p-4">
             <alert v-if="errorAlert" :type="errorAlert.type" :message="errorAlert.message" />
 
             <form @submit.prevent="onSubmit">
-                <input v-model="expression" class="expression-input" type="text" placeholder="Enter a mathematical expression..." :disabled="loading">
-
-                <button class="expression-submit" type="submit" :disabled="loading">Submit</button>
+                <input v-model="expression" class="rounded text-lg p-2 w-full" type="text" placeholder="Enter a mathematical expression..." :disabled="loading">
             </form>
 
-            <div class="example-expressions">
+            <div class="mt-4">
                 <h2>Example Expressions</h2>
 
                 <ul class="expression-list">
-                    <li v-for="(example, idx) in exampleExpressions" :key="idx" @click="() => expression = example[0]">{{ example[0] }} => {{ example[1] }}</li>
+                    <li
+                        v-for="(example, idx) in exampleExpressions"
+                        :key="idx"
+                        @click="() => expression = example[0]"
+                        class="cursor-pointer"
+                    >
+                        {{ example[0] }} => {{ example[1] }}
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-$bg-color: #e4e4e7;
-$fg-color: #cbd5e1;
-
-.calculator {
-    background: $bg-color;
-    border-radius: 8px;
-    width: 40%;
-    position: relative;
-
-    .title {
-        padding: 0.5em 0;
-        text-align: center;
-
-        &.bottom-border {
-            border-bottom: 2px solid black;
-        }
-    }
-}
-
-.calculator-box {
-    padding: 8px;
-
-    form {
-        display: flex;
-
-        input {
-            border-radius: 6px;
-            font-size: 18px;
-            padding: 0.5rem;
-        }
-
-        button[type="submit"] {
-            margin-left: 8px;
-        }
-    }
-}
-
-.expression-input {
-    background: $fg-color;
-    border-radius: 8px;
-    width: 100%;
-}
-
-.expression-submit {
-    padding: 0 0.5rem;
-    cursor: pointer;
-}
-
-.example-expressions {
-    margin-top: 1rem;
-}
-
-.expression-list {
-    list-style-type: none;
-
-    li {
-        margin: 0.5rem 0;
-        cursor: pointer;
-    }
-}
-</style>
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
