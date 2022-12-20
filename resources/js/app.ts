@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 
-import './scss/_app.scss';
+import './assets/scss/_app.scss';
 
-import App from './components/App.vue';
+import App from './views/App.vue';
 
 createApp(App)
     .mount('#app')

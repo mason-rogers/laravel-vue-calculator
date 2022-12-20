@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('calculations', function (Blueprint $table) {
             $table->id();
             $table->text('expression');
-            $table->float('result');
+            $table->double('result', 12, 3);
             $table->timestamps();
         });
     }
