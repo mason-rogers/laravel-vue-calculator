@@ -114,7 +114,15 @@ export default defineComponent({
             },
 
             toggleNegative() {
+                const lastNumberRegex = /(^|[-+]?\d*\.?\d*)$/;
+                const match = expression.value.match(lastNumberRegex);
+                if (!match[1]) return;
 
+                const newExpression = expression.value.split(' ');
+                const lastItem = newExpression[newExpression.length - 1];
+                newExpression[newExpression.length - 1] = (lastItem.startsWith('-') ? lastItem.slice(1) : `-${lastItem}`);
+
+                expression.value = newExpression.join(' ');
             },
 
             async onSubmit() {
