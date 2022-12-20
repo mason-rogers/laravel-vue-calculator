@@ -1,5 +1,5 @@
 <template>
-    <div class="p-2 text-zinc-200 rounded" :class="colorClass">
+    <div class="p-2 text-zinc-200" :class="colorClass">
         <p>{{ message }}</p>
     </div>
 </template>

@@ -2,8 +2,8 @@
     <div class="bg-neutral-900 rounded-lg w-3/5 relative flex flex-col">
         <h1 class="text-center my-4 font-semibold text-lg">Previous Calculations</h1>
 
-        <div v-if="loading">
-            Loading...
+        <div v-if="loading" class="text-center">
+            <p>Loading previous calculations...</p>
         </div>
 
         <div v-else class="p-4 relative overflow-y-scroll flex-grow space-y-4">
@@ -57,12 +57,16 @@ export default defineComponent({
        const calculations = ref<ICalculation[]>([]);
 
        const refresh = async () => {
+           loading.value = true;
+
            console.log('Refreshing past calculations');
 
            const res = await client.get('/api/calculations');
            const data = res.data as CalculationsResponse;
 
            calculations.value = data.data;
+
+           loading.value = false;
        }
 
        onMounted(() => {
