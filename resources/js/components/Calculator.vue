@@ -140,9 +140,9 @@ export default defineComponent({
                     const data = res.data as CalculateResponse;
 
                     const evaluatedExpression = expression.value;
-                    expression.value = data.result.toString();
+                    expression.value = data.result.result.toString();
 
-                    emit('result', evaluatedExpression, data.result);
+                    emit('result', evaluatedExpression, data.result.result);
                 } catch (err: AxiosError) {
                     if (err.response.status === 422) {
                         errorAlert.value = {
