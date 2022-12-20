@@ -2,6 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Exceptions\Expression\DivisionByZeroException;
+use App\Exceptions\Expression\InvalidOperatorException;
 use App\Services\ExpressionService;
 use PHPUnit\Framework\TestCase;
 
@@ -125,5 +127,19 @@ class ExpressionServiceTest extends TestCase
         $value = $this->parseAndEvaluate("5 - -10");
 
         $this->assertEquals(15, $value);
+    }
+
+    public function test_evaluate_division_by_zero()
+    {
+        $this->expectException(DivisionByZeroException::class);
+
+        $this->service->evaluateBasic("5",  "/", "0");
+    }
+
+    public function test_evaluate_invalid_operator()
+    {
+        $this->expectException(InvalidOperatorException::class);
+
+        $this->service->evaluateBasic("10",  "_", "10");
     }
 }
