@@ -35,7 +35,7 @@ class CalculationController extends Controller
 
         return [
             'success' => true,
-            'result' => $created->result,
+            'result' => $created,
         ];
     }
 

@@ -5,7 +5,7 @@ export interface CalculateRequest {
 export interface CalculateResponse {
     success: boolean;
     error?: string;
-    result: number;
+    result: ICalculation;
 }
 
 export interface ICalculation {

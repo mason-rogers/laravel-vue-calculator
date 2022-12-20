@@ -5,7 +5,7 @@ namespace Tests\Unit;
 use App\Exceptions\Expression\DivisionByZeroException;
 use App\Exceptions\Expression\InvalidOperatorException;
 use App\Services\ExpressionService;
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ExpressionServiceTest extends TestCase
 {
